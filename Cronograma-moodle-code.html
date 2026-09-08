@@ -1,0 +1,149 @@
+<!-- ============ CAJA DE CRONOGRAMA — ÁVACO ============ -->
+<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 100%; margin: 20px auto;">
+    <div
+        style="background: #ffffff; border: 1px solid #d6e4f5; border-radius: 18px; overflow: hidden; box-shadow: 0 5px 18px rgba(11,37,69,.08); position: relative;">
+        <div style="padding: 40px; position: relative; overflow: hidden;">
+            <!-- Elemento decorativo -->
+            <div
+                style="position: absolute; top: -27px; right: -27px; width: 100px; height: 100px; overflow: visible; pointer-events: none;">
+                <div style="position: absolute; inset: 0; border-radius: 50%; border: 10px solid rgba(19,64,116,.08);">
+                     </div>
+                <div
+                    style="position: absolute; top: 16px; left: 16px; right: 16px; bottom: 16px; border-radius: 50%; border: 7px solid rgba(19,64,116,.10);">
+                     </div>
+                <div
+                    style="position: absolute; top: 32px; left: 32px; right: 32px; bottom: 32px; border-radius: 50%; background: rgba(19,64,116,.12);">
+                     </div>
+            </div>
+            <div style="position: relative; z-index: 2;"><!-- Título -->
+                <h2
+                    style="margin: 0; font-family: Roboto, sans-serif; font-size: 28px; font-weight: bold; color: #334155;">
+                    Cronograma del curso</h2>
+                <!-- Línea de color -->
+                <div
+                    style="margin: 8px 0 14px 0; width: 80px; height: 5px; border-radius: 20px; background: linear-gradient(90deg,#7C3AED,#A78BFA);">
+                     </div>
+                <!-- Texto introductorio -->
+                <div style="margin: 0 0 22px 0;">
+                    <p
+                        style="margin: 0; color: #3c3c3b; font-family: Roboto, sans-serif; line-height: 1.4; font-size: 16px; text-align: justify;">
+                        Consulte la programación del curso. Encuentre las fechas y horarios
+                        de los encuentros sincrónicos para organizar su tiempo de estudio de
+                        manera eficiente</p>
+                </div>
+                <!-- Cronograma desplegable -->
+                <details>
+                    <summary
+                        style="display: inline-block; cursor: pointer; background: #0B2545; color: #ffffff; border: none; border-radius: 10px; padding: 12px 24px; font-family: Roboto, sans-serif; font-size: 15px; font-weight: bold; transition: background .15s ease-in-out;">
+                        Ver Cronograma</summary>
+                    <p
+                        style="margin: 16px 0 0 0; color: #5d6778; font-family: Roboto, sans-serif; font-size: 13px; font-style: italic;">
+                        Desliza hacia la derecha para ver toda la información de la tabla →
+                    </p>
+                    <!-- Contenedor donde se inyecta la tabla -->
+                    <div id="tabla-sesiones-container"
+                        style="margin-top: 10px; border: 1px solid #d6e4f5; border-radius: 14px; overflow-x: auto;">
+                        <p
+                            style="padding: 15px; color: #5d6778; font-family: Roboto, sans-serif; margin: 0; text-align: center;">
+                            Cargando información en tiempo real...</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+    <!-- SCRIPT 1: Control de caché e interceptor visual con enlaces clicables -->
+    <script>
+        // 1. ROMPER CACHÉ
+        const originalFetch = window.fetch;
+        window.fetch = function (url, options) {
+            if (typeof url === 'string' && url.includes('spreadsheets')) {
+                const uniqueTimestamp = new Date().getTime();
+                url = url + '&_cb=' + uniqueTimestamp;
+            }
+            return originalFetch(url, options);
+        };
+
+        // 2. INTERCEPTOR VISUAL
+        const originalLog = console.log;
+        console.log = function (...args) {
+            originalLog.apply(console, args);
+
+            if (args && typeof args[0] === 'string' && args[0].includes(
+                'Sesión,Fecha,Hora')) {
+                const csvText = args[0];
+                const rows = csvText.split('\n');
+
+                let tableHtml =
+                    '<table style="width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 820px; font-family: Roboto, sans-serif;">';
+                let esPrimeraFila = true;
+
+                rows.forEach((row) => {
+                    if (row.trim() === '') return;
+
+                    const cells = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+                    if (esPrimeraFila) {
+                        // Encabezados
+                        tableHtml +=
+                            '<tr style="background: #edf4fb; color: #0b2545;">';
+                        cells.forEach((cell, cellIdx) => {
+                            const cleanCell = cell.replace(/^"|"$/g, '').trim();
+                            const align = cellIdx === 0 ? 'text-align: left;' :
+                                'text-align: center;';
+                            tableHtml += '<td style="padding: 12px 10px; ' + align +
+                                ' font-weight: bold;">' + cleanCell + '</td>';
+                        });
+                        tableHtml += '</tr>';
+                        esPrimeraFila = false;
+                    } else {
+                        // Filas de datos
+                        tableHtml +=
+                            '<tr style="border-bottom: 1px solid #e2e8f0; color: #5d6778;">';
+                        cells.forEach((cell, cellIdx) => {
+                            let cleanCell = cell.replace(/^"|"$/g, '').trim();
+                            const align = cellIdx === 0 ? 'text-align: left;' :
+                                'text-align: center;';
+
+                            // Detección y conversión de enlaces
+                            if (/^https?:\/\/[^\s"']+/i.test(cleanCell)) {
+                                cleanCell = '<a href="' + cleanCell +
+                                    '" target="_blank" rel="noopener noreferrer" style="color: #0b2545; font-weight: bold; text-decoration: underline;">Acceder</a>';
+                            } else if (cleanCell.includes('<a ')) {
+                                cleanCell = cleanCell.replace('<a ',
+                                    '<a target="_blank" rel="noopener noreferrer" style="color: #0b2545; font-weight: bold; text-decoration: underline;" '
+                                );
+                            } else if (/https?:\/\/[^\s"']+/i.test(cleanCell)) {
+                                cleanCell = cleanCell.replace(
+                                    /(https?:\/\/[^\s"']+)/gi,
+                                    '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #0b2545; font-weight: bold; text-decoration: underline;">Acceder</a>'
+                                );
+                            }
+
+                            if (cellIdx === 0 && cleanCell !== '') {
+                                cleanCell = '<strong>' + cleanCell + '</strong>';
+                            }
+
+                            tableHtml += '<td style="padding: 12px 10px; ' + align +
+                                ' line-height: 1.7;">' + cleanCell + '</td>';
+                        });
+                        tableHtml += '</tr>';
+                    }
+                });
+
+                tableHtml += '</table>';
+
+                const container = document.getElementById('tabla-sesiones-container');
+                if (container) {
+                    container.innerHTML = tableHtml;
+                }
+
+                // Restauramos valores nativos
+                console.log = originalLog;
+                window.fetch = originalFetch;
+            }
+        };
+    </script>
+    <!-- SCRIPT 2: Archivo JavaScript externo original -->
+    <script src="https://virtualdev.unibague.edu.co/pluginfile.php/8040/mod_resource/content/5/littlebridge.js">
+    </script>
+</div>
