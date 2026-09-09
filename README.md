@@ -1,6 +1,6 @@
 # Cronograma Dinámico Multigrupo
 
-**Autor:** Este proyecto es de autoría propia del desarrollador.
+**Autor:** Este proyecto es desarrollado por Juan Camilo Franco Perdomo.
 **Institución:** Puesto al servicio de la Universidad de Ibagué.
 **Ecosistema:** ÁVACO / Moodle
 **Versión:** 1.0
