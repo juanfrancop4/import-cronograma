@@ -1,6 +1,6 @@
 (async () => {
   try {
-    const fullUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcVmQjXPsPVgYOvUpSiHbFBfyT1h0LUOtoE_UDBG2ijX7qlixuVYb5CTnQcS-WD8db57j8yM1qeuP5/pub?output=csv";
+    const fullUrl = "INSERTE-AQUÍ-EL-ENLACE-DEL-CSV-PUBLICADO";
 
     const response = await fetch(fullUrl);
 
