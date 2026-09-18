@@ -2,7 +2,6 @@
 
 **Autor:** Este proyecto es desarrollado por Juan Camilo Franco Perdomo.
 **Institución:** Puesto al servicio de la Universidad de Ibagué.
-**Ecosistema:** ÁVACO / Moodle
 **Versión:** 1.0
 **Licencia:** Propiedad intelectual del autor. Uso y distribución autorizados exclusivamente para la Universidad de Ibagué.
 
