@@ -5,8 +5,6 @@
 **Versión:** 1.0
 **Licencia:** Propiedad intelectual del autor. Uso y distribución autorizados exclusivamente para la Universidad de Ibagué.
 
-> **Nota sobre bifurcaciones (clones) de este repositorio:** si este proyecto se clona o se sube a otro repositorio (por ejemplo, uno alojado en una cuenta institucional), el README de esa copia debe conservar esta misma nota de autoría. La autoría del proyecto sigue siendo del desarrollador original, independientemente de en qué cuenta o repositorio se aloje el código.
-
 ---
 
 ## Contexto y Problemática
